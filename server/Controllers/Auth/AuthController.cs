@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using server.Entities;
 using server.Helpers;
-using server.Models;
+using server.Models.Auth;
 using server.Services.Auth;
 
 namespace server.Controllers.Auth

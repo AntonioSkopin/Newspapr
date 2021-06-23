@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using server.Entities;
-using server.Models;
+using server.Models.Auth;
 
 namespace server.Services.Auth
 {

@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using System;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
+using server.Services.Articles;
 
 namespace server
 {
@@ -55,6 +56,7 @@ namespace server
             JWTService.ConfigureJWTAuth(services, appSettingsSection);
 
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IArticleService, ArticleService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
