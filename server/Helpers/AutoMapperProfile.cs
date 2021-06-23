@@ -1,5 +1,5 @@
 using server.Entities;
-using server.Models;
+using server.Models.Auth;
 using AutoMapper;
 
 namespace server.Helpers
