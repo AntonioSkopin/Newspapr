@@ -28,7 +28,7 @@ namespace server.Services
             get
             {
                 IConfigurationSection cs = _configuration.GetSection("ConnectionStrings");
-                string s = cs["AuthSystemDB"];
+                string s = cs["NewsPapr"];
                 return new SqlConnection(s);
             }
         }
