@@ -1,7 +1,12 @@
-export default function App() {
+// Pages
+import LoginPage from "./Pages/LoginPage/LoginPage.jsx";
+
+const App = () => {
   return (
-    <div className="bg-gray-100 w-screen h-screen">
-      <h1 className="text-6xl font-bold text-gray-800">Newpapr.</h1>
+    <div className="w-screen h-screen">
+      <LoginPage />
     </div>
   );
 }
+
+export default App;
