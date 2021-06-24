@@ -34,10 +34,11 @@ namespace server.Controllers.Auth
         {
             var user = await _authService.Authenticate(model);
 
-            // Check if account is activated, if so give the user the token, if not give feedback msg
-            var token = await _authService.CheckIfAccountIsActivated(user.Gd) ? JWTService.CreateToken(user, _appSettings) : "Please activate your account.";
+            if (user == null)
+                return Unauthorized("Please enter valid credentials.");
 
-            return Ok(token);
+            // Check if account is activated, if so give the user the token, if not give feedback msg
+            return await _authService.CheckIfAccountIsActivated(user.Gd) ? Ok(JWTService.CreateToken(user, _appSettings)) : Unauthorized("Please activate your account.");
         }
 
         [HttpPost]
