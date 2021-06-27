@@ -1,10 +1,10 @@
-// Pages
-import LoginPage from "./Pages/LoginPage/LoginPage.jsx";
+// Routes
+import Routes from "./Routes/Routes";
 
 const App = () => {
   return (
     <div className="w-screen h-screen">
-      <LoginPage />
+      <Routes />
     </div>
   );
 }

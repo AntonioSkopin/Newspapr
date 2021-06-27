@@ -2,10 +2,13 @@
 import { useState } from "react";
 
 // Assets
-import LoginIMG from "../../Assets/Images/login-img.jpg";
+import LoginIMG from "../../../Assets/Images/login-img.jpg";
 
 // Services
-import { Authenticate } from "../../Services/AuthService";
+import { Authenticate } from "../../../Services/AuthService";
+
+// Router
+import { Link } from "react-router-dom";
 
 const LoginPage = () => {
     const [formData, setFormData] = useState({});
@@ -61,7 +64,7 @@ const LoginPage = () => {
                         </div>
                         <button onClick={handleSubmit} type="submit" className="block w-full px-4 py-3 mt-6 font-semibold text-white transition duration-500 ease-in-out transform bg-black rounded-lg hover:bg-blueGray-800 focus:shadow-outline focus:outline-none focus:ring-2 ring-offset-current ring-offset-2 ">Log In</button>
                     </form>
-                    <p className="mt-8 text-center">Need an account? <a href="#" className="font-semibold text-blue-500 hover:text-blue-700">Sign Up</a></p>
+                    <p className="mt-8 text-center">Need an account? <Link to="/register" className="font-semibold text-blue-500 hover:text-blue-700">Sign Up</Link></p>
                 </div>
             </div>
         </section>
