@@ -31,17 +31,19 @@ namespace server.Services.Articles
             var createArticleQuery =
             @"
                 INSERT INTO Articles
-                VALUES(NEWID(), @_title, @_content, @_postedBy, GETDATE())
+                VALUES(NEWID(), @_title, @_content, @_postedBy, GETDATE(), @_tag, @_img_id)
             ";
 
             await PostQuery(createArticleQuery, new
             {
                 _title = model.Title,
                 _content = model.Content,
-                _postedBy = model.PostedBy
+                _postedBy = model.PostedBy,
+                _tag = model.Tag,
+                _img_id = model.ImageID
             });
         }
-
+        
         public async Task DeleteArticle(Guid article_gd)
         {
             var deleteArticleQuery =
