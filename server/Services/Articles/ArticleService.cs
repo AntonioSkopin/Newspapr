@@ -15,6 +15,8 @@ namespace server.Services.Articles
         Task<Article> GetArticle(Guid article_gd);
         Task<List<Article>> GetArticles();
         Task<List<Article>> GetArticlesOfUser(Guid user_gd);
+        Task<List<Article>> GetTop3ArticlesOfTag(string Tag);
+        Task<List<Article>> GetAllArticlesOfTag(string Tag);
     }
     public class ArticleService : SqlService, IArticleService
     {
@@ -118,6 +120,38 @@ namespace server.Services.Articles
             });
 
             return newArticle;
+        }
+
+        public async Task<List<Article>> GetTop3ArticlesOfTag(string Tag)
+        {
+            var GetTop3ArticlesOfTagQuery = 
+            @"
+                SELECT TOP 3 * 
+                FROM Articles
+                WHERE Articles.Tag = @_tag
+                ORDER BY DatePosted DESC;
+            ";
+
+            return await GetManyQuery<Article>(GetTop3ArticlesOfTagQuery, new
+            {
+                _tag = Tag
+            });
+        }
+
+        public async Task<List<Article>> GetAllArticlesOfTag(string Tag)
+        {
+            var GetAllArticlesOfTagQuery = 
+            @"
+                SELECT  * 
+                FROM Articles
+                WHERE Articles.Tag = @_tag
+                ORDER BY DatePosted DESC;
+            ";
+
+            return await GetManyQuery<Article>(GetAllArticlesOfTagQuery, new
+            {
+                _tag = Tag
+            });
         }
     }
 }

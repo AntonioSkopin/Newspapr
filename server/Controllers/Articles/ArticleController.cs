@@ -57,6 +57,20 @@ namespace server.Controllers.Articles
             return Ok(articles);
         }
 
+        [HttpGet]
+        public async Task<ActionResult<List<Article>>> GetTop3ArticlesOfTag(string tag)
+        {
+            List<Article> articles = await _articleService.GetTop3ArticlesOfTag(tag);
+            return Ok(articles);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<List<Article>>> GetAllArticlesOfTag(string tag)
+        {
+            List<Article> articles = await _articleService.GetAllArticlesOfTag(tag);
+            return Ok(articles);
+        }
+
         [HttpPut]
         public async Task<ActionResult<Article>> UpdateArticle(ArticleModel model)
         {
