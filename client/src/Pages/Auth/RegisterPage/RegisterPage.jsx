@@ -9,6 +9,8 @@ import { Register } from "../../../Services/AuthService";
 
 // Router
 import { Link } from "react-router-dom";
+import BlackButton from "../../../Components/Buttons/BlackButton";
+import Input from "../../../Components/Inputs/Input";
 
 const RegisterPage = () => {
     const [formData, setFormData] = useState({});
@@ -52,28 +54,25 @@ const RegisterPage = () => {
                         </div>
                         <div className="mt-4">
                             <label className="block text-sm font-medium leading-relaxed tracking-tighter text-gray-700">Email</label>
-                            <input
+                            <Input
                                 onChange={handleFormChange}
                                 type="email"
                                 name="Email"
                                 placeholder="Your Email"
-                                className="w-full px-4 py-2 text-base text-black transition duration-500 ease-in-out transform border-transparent rounded-lg bg-gray-100 focus:border-gray-500 focus:bg-white focus:outline-none focus:shadow-outline focus:ring-2 ring-offset-current ring-offset-2 " required="" />
+                            />
                         </div>
                         <div className="mt-4">
                             <label className="block text-sm font-medium leading-relaxed tracking-tighter text-gray-700">Password</label>
-                            <input
+                            <Input
                                 onChange={handleFormChange}
                                 type="password"
                                 name="Password"
                                 placeholder="Your Password"
-                                className="w-full px-4 py-2 text-base text-black transition duration-500 ease-in-out transform border-transparent rounded-lg bg-gray-100 focus:border-gray-500 focus:bg-white focus:outline-none focus:shadow-outline focus:ring-2 ring-offset-current ring-offset-2 " required="" />
-                        </div>
-                        <button
+                            />         
+                       </div>
+                        <BlackButton 
                             onClick={handleSubmit}
-                            type="submit"
-                            className="block w-full px-4 py-3 mt-6 font-semibold text-white transition duration-500 ease-in-out transform bg-black rounded-lg hover:bg-blueGray-800 focus:shadow-outline focus:outline-none focus:ring-2 ring-offset-current ring-offset-2 ">
-                            Create your account
-                        </button>
+                            text="Create your account" />
                     </form>
                     <p className="mt-8 text-center">Already an account? <Link to="/login" className="font-semibold text-blue-500 hover:text-blue-700">Sign In</Link></p>
                 </div>
