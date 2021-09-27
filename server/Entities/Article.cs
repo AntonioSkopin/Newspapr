@@ -11,5 +11,7 @@ namespace server.Entities
         public string Content { get; set; }
         public Guid PostedBy { get; set; }
         public DateTime DatePosted { get; set; }
+        public string Tag { get; set; }
+        public string ImageID { get; set; }
     }
 }
