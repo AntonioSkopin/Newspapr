@@ -36,6 +36,13 @@ namespace server.Controllers.Articles
             return Ok();
         }
 
+        [HttpPost]
+        public async Task<ActionResult> SaveArticle(ArticleSaveModel model)
+        {
+            await _articleService.SaveArticle(model);
+            return Ok();
+        }
+
         [HttpDelete]
         public async Task<ActionResult> DeleteArticle(Guid article_gd)
         {
@@ -44,9 +51,16 @@ namespace server.Controllers.Articles
         }
 
         [HttpDelete]
-        public async Task<ActionResult> UnlikeArticle(Guid article_gd)
+        public async Task<ActionResult> UnlikeArticle(ArticleLikeModel model)
         {
-            await _articleService.UnlikeArticle(article_gd);
+            await _articleService.UnlikeArticle(model);
+            return Ok();
+        }
+
+        [HttpDelete]
+        public async Task<ActionResult> UnsaveArticle(ArticleSaveModel model)
+        {
+            await _articleService.UnsaveArticle(model);
             return Ok();
         }
 
@@ -97,6 +111,13 @@ namespace server.Controllers.Articles
         {
             int articleCount = await _articleService.GetLikesOfArticleCount(article_gd);
             return Ok(articleCount);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<List<Article>>> GetSavedArticlesOfUser(Guid user_gd)
+        {
+            List<Article> articles = await _articleService.GetSavedArticlesOfUser(user_gd);
+            return Ok(articles);
         }
 
         [HttpPut]

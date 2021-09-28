@@ -9,18 +9,30 @@ namespace server.Services.Articles
 {
     public interface IArticleService
     {
+        /* BASIC CRUD */
         Task CreateArticle(ArticleModel model);
         Task<Article> UpdateArticle(ArticleModel model);
         Task DeleteArticle(Guid article_gd);
         Task<Article> GetArticle(Guid article_gd);
+        /* BASIC CRUD */
+
         Task<List<Article>> GetArticles();
         Task<List<Article>> GetArticlesOfUser(Guid user_gd);
         Task<List<Article>> GetTop3ArticlesOfTag(string Tag);
         Task<List<Article>> GetAllArticlesOfTag(string Tag);
+
+        /* LIKE METHODS */
         Task LikeArticle(ArticleLikeModel model);
         Task<List<Article>> GetLikedArticlesOfUser(Guid user_gd);
-        Task UnlikeArticle(Guid article_gd);
+        Task UnlikeArticle(ArticleLikeModel model);
         Task<int> GetLikesOfArticleCount(Guid article_gd);
+        /* LIKE METHODS */
+
+        /* SAVE METHODS */
+        Task SaveArticle(ArticleSaveModel model);
+        Task<List<Article>> GetSavedArticlesOfUser(Guid user_gd);
+        Task UnsaveArticle(ArticleSaveModel model);
+        /* SAVE METHODS */
     }
     public class ArticleService : SqlService, IArticleService
     {
@@ -195,17 +207,19 @@ namespace server.Services.Articles
             });
         }
 
-        public async Task UnlikeArticle(Guid article_gd)
+        public async Task UnlikeArticle(ArticleLikeModel model)
         {
             var UnlikeArticleQuery =
             @"
                 DELETE FROM ArticleLikes
-                WHERE ArticleGd = @_article_gd      
+                WHERE ArticleGd = @_article_gd   
+                AND UserGd = @_user_gd   
             ";           
 
             await DeleteQuery(UnlikeArticleQuery, new
             {
-                _article_gd = article_gd
+                _article_gd = model.ArticleGd,
+                _user_gd = model.UserGd
             });
         }
 
@@ -221,6 +235,54 @@ namespace server.Services.Articles
             {
                 _article_gd = article_gd
             });  
+        }
+
+        public async Task SaveArticle(ArticleSaveModel model)
+        {
+            // User can only like an article once
+            var saveArticleQuery =
+            @"
+                INSERT INTO ArticleSaved
+                VALUES(NEWID(), @_article_gd, @_user_gd, GETDATE())
+            ";
+
+            await PostQuery(saveArticleQuery, new
+            {
+                _article_gd = model.ArticleGd,
+                _user_gd = model.UserGd
+            });
+        }
+
+        public async Task<List<Article>> GetSavedArticlesOfUser(Guid user_gd)
+        {
+            var GetSavedArticlesOfUserQuery =
+            @"
+                SELECT article.* FROM Articles article
+                LEFT JOIN ArticleSaved savedArticle on article.Gd = savedArticle.ArticleGd
+                LEFT JOIN Users usr on savedArticle.UserGd = usr.Gd
+                WHERE usr.Gd = @_user_gd
+            ";
+
+            return await GetManyQuery<Article>(GetSavedArticlesOfUserQuery, new
+            {
+                _user_gd = user_gd
+            });
+        }
+
+        public async Task UnsaveArticle(ArticleSaveModel model)
+        {
+            var UnSaveArticleQuery =
+            @"
+                DELETE FROM ArticleSaved
+                WHERE ArticleGd = @_article_gd     
+                AND UserGd = @_user_gd
+            ";           
+
+            await DeleteQuery(UnSaveArticleQuery, new
+            {
+                _article_gd = model.ArticleGd,
+                _user_gd = model.UserGd
+            });
         }
     }
 }
