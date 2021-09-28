@@ -17,6 +17,10 @@ namespace server.Services.Articles
         Task<List<Article>> GetArticlesOfUser(Guid user_gd);
         Task<List<Article>> GetTop3ArticlesOfTag(string Tag);
         Task<List<Article>> GetAllArticlesOfTag(string Tag);
+        Task LikeArticle(ArticleLikeModel model);
+        Task<List<Article>> GetLikedArticlesOfUser(Guid user_gd);
+        Task UnlikeArticle(Guid article_gd);
+        Task<int> GetLikesOfArticleCount(Guid article_gd);
     }
     public class ArticleService : SqlService, IArticleService
     {
@@ -152,6 +156,71 @@ namespace server.Services.Articles
             {
                 _tag = Tag
             });
+        }
+
+        public async Task LikeArticle(ArticleLikeModel model)
+        {
+            // User can only like an article once
+            var likeArticleQuery =
+            @"
+                INSERT INTO ArticleLikes(Gd, ArticleGd, UserGd, DateLiked)
+                SELECT NEWID(), @_article_gd, @_user_gd, GETDATE()
+                FROM ArticleLikes
+                WHERE NOT EXISTS (SELECT ArticleGd, UserGD 
+                                  FROM ArticleLikes 
+                                  WHERE ArticleGd = @_article_gd
+                                  AND UserGd = @_user_gd)
+            ";
+
+            await PostQuery(likeArticleQuery, new
+            {
+                _article_gd = model.ArticleGd,
+                _user_gd = model.UserGd
+            });
+        }
+
+        public async Task<List<Article>> GetLikedArticlesOfUser(Guid user_gd)
+        {
+            var GetLikedArticlesOfUserQuery =
+            @"
+                SELECT article.* FROM Articles article
+                LEFT JOIN ArticleLikes likedArticle on article.Gd = likedArticle.ArticleGd
+                LEFT JOIN Users usr on likedArticle.UserGd = usr.Gd
+                WHERE usr.Gd = @_user_gd
+            ";
+
+            return await GetManyQuery<Article>(GetLikedArticlesOfUserQuery, new
+            {
+                _user_gd = user_gd
+            });
+        }
+
+        public async Task UnlikeArticle(Guid article_gd)
+        {
+            var UnlikeArticleQuery =
+            @"
+                DELETE FROM ArticleLikes
+                WHERE ArticleGd = @_article_gd      
+            ";           
+
+            await DeleteQuery(UnlikeArticleQuery, new
+            {
+                _article_gd = article_gd
+            });
+        }
+
+        public async Task<int> GetLikesOfArticleCount(Guid article_gd)
+        {
+            var GetLikesOfArticleCountQuery =
+            @"
+                SELECT COUNT(Gd) FROM ArticleLikes
+                WHERE ArticleGd = @_article_gd
+            ";
+
+            return await GetQuery<int>(GetLikesOfArticleCountQuery, new
+            {
+                _article_gd = article_gd
+            });  
         }
     }
 }

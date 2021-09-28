@@ -29,10 +29,24 @@ namespace server.Controllers.Articles
             return Ok();
         }
 
+        [HttpPost]
+        public async Task<ActionResult> LikeArticle(ArticleLikeModel model)
+        {
+            await _articleService.LikeArticle(model);
+            return Ok();
+        }
+
         [HttpDelete]
         public async Task<ActionResult> DeleteArticle(Guid article_gd)
         {
             await _articleService.DeleteArticle(article_gd);
+            return Ok();
+        }
+
+        [HttpDelete]
+        public async Task<ActionResult> UnlikeArticle(Guid article_gd)
+        {
+            await _articleService.UnlikeArticle(article_gd);
             return Ok();
         }
 
@@ -69,6 +83,20 @@ namespace server.Controllers.Articles
         {
             List<Article> articles = await _articleService.GetAllArticlesOfTag(tag);
             return Ok(articles);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<List<Article>>> GetLikedArticlesOfUser(Guid user_gd)
+        {
+            List<Article> articles = await _articleService.GetLikedArticlesOfUser(user_gd);
+            return Ok(articles);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<int>> GetLikesOfArticleCount(Guid article_gd)
+        {
+            int articleCount = await _articleService.GetLikesOfArticleCount(article_gd);
+            return Ok(articleCount);
         }
 
         [HttpPut]
