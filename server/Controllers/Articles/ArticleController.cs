@@ -119,6 +119,13 @@ namespace server.Controllers.Articles
             List<Article> articles = await _articleService.GetSavedArticlesOfUser(user_gd);
             return Ok(articles);
         }
+        
+        [HttpGet]
+        public async Task<ActionResult<List<Article>>> GetSpotlightArticles(string tag)
+        {
+            List<Article> articles = await _articleService.GetSpotlightArticles(tag);
+            return Ok(articles);
+        }
 
         [HttpPut]
         public async Task<ActionResult<Article>> UpdateArticle(ArticleModel model)

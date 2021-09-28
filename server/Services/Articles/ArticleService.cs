@@ -33,6 +33,8 @@ namespace server.Services.Articles
         Task<List<Article>> GetSavedArticlesOfUser(Guid user_gd);
         Task UnsaveArticle(ArticleSaveModel model);
         /* SAVE METHODS */
+
+        Task<List<Article>> GetSpotlightArticles(string Tag);
     }
     public class ArticleService : SqlService, IArticleService
     {
@@ -282,6 +284,43 @@ namespace server.Services.Articles
             {
                 _article_gd = model.ArticleGd,
                 _user_gd = model.UserGd
+            });
+        }
+
+        public async Task<List<Article>> GetSpotlightArticles(string Tag)
+        {
+            /* 
+                Summary:
+                    - Show top 4 articles of given Tag
+                    - Top 4 is based on:
+                        - Amount of likes
+                        - Amount of Saves
+            */
+            var GetSpotlightArticlesQuery =
+            @"
+                SELECT TOP 4 article.*, likedArticle.numLikes, savedArticle.numSaved 
+                FROM Articles article 
+                LEFT JOIN (
+                            SELECT ArticleGd, COUNT(ArticleGd) AS numLikes
+                            FROM ArticleLikes
+                            GROUP BY ArticleGd
+                        ) likedArticle 
+                ON likedArticle.ArticleGd = article.Gd
+                LEFT JOIN (
+                            SELECT ArticleGd, COUNT(ArticleGd) AS numSaved
+                            FROM ArticleSaved
+                            GROUP BY ArticleGd
+                        ) savedArticle
+                ON savedArticle.ArticleGd = article.Gd
+                WHERE Tag = @_tag
+                    OR likedArticle.numLikes IS NOT NULL
+                    OR savedArticle.numSaved IS NOT NULL
+                ORDER BY likedArticle.numLikes DESC, savedArticle.numSaved DESC;
+            ";
+
+            return await GetManyQuery<Article>(GetSpotlightArticlesQuery, new
+            {
+                _tag = Tag
             });
         }
     }
