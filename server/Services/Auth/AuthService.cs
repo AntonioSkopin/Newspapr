@@ -138,7 +138,7 @@ namespace server.Services.Auth
             ";
 
             // Execute query and store new user
-            var createdUser = await PostQuery<User>(insertUserQuery, new
+            await PostQuery<User>(insertUserQuery, new
             {
                 _fullname = user.Fullname,
                 _email = user.Email,
@@ -146,6 +146,11 @@ namespace server.Services.Auth
                 _salt = passwordSalt,
                 _isActivated = false,
                 _pin = GeneratePin()
+            });
+
+            User createdUser = await GetQuery<User>(@"SELECT * FROM Users WHERE Email = @_email", new
+            {
+                _email = user.Email
             });
 
             return createdUser;
