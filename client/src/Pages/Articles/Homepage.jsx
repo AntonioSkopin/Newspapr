@@ -1,12 +1,22 @@
 // Components
 import BlackButton from "../../Components/Buttons/BlackButton";
-import Input from "../../Components/Inputs/Input";
 import FeaturedArticles from "../../Components/Articles/FeaturedArticles";
 import SpotlightSection from "../../Components/Articles/SpotlightSection";
+import { useSelector } from "react-redux";
+import AuthService from "../../Services/AuthService";
 
 const HomePage = () => {
+
+    const { user: currentUser } = useSelector((state) => state.auth);
+
     return (
         <section className="container mx-auto px-4 py-12">
+            <span className="w-full flex justify-between items-center pb-8">
+                <p className="text-lg">👋🏻 {currentUser.email}</p>
+                <div className="w-max">
+                    <BlackButton event={() => AuthService.logout()} text="Sign out" />
+                </div>
+            </span>
             <div className="text-center">
                 <h1 className="text-5xl font-semibold">
                     <span className="headline font-medium">Latest news </span>

@@ -1,6 +1,4 @@
-import IMG from "../../Assets/Images/article-img.webp";
 import IMG2 from "../../Assets/Images/interview.jpg";
-import {BsArrowRight} from "react-icons/bs";
 import {AiFillPlayCircle} from "react-icons/ai";
 
 const ArticleCard = props => {

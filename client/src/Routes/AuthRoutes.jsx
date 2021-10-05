@@ -9,8 +9,9 @@ import { lazy, Suspense } from "react";
 import { PATH } from "../Constants/paths";
 
 // Components
-const LoginPage = lazy(() => import("../Pages/Auth/LoginPage/LoginPage"));
-const RegisterPage = lazy(() => import("../Pages/Auth/RegisterPage/RegisterPage"));
+const LoginPage = lazy(() => import("../Pages/Auth/LoginPage"));
+const RegisterPage = lazy(() => import("../Pages/Auth/RegisterPage"));
+const ActivateAccountPage = lazy(() => import("../Pages/Auth/ActivateAccountPage"));
 
 const AuthRoutes = () => {
     return (
@@ -30,6 +31,15 @@ const AuthRoutes = () => {
                 component={() => (
                     <Suspense fallback={<div>wait</div>}>
                         <RegisterPage />
+                    </Suspense>
+                )}
+            />
+            <Route
+                exact
+                path={PATH.ACTIVATE_ACCOUNT}
+                component={() => (
+                    <Suspense fallback={<div>wait</div>}>
+                        <ActivateAccountPage />
                     </Suspense>
                 )}
             />

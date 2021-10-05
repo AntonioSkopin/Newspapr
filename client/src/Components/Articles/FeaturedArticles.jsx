@@ -6,7 +6,7 @@ const FeaturedArticles = props => {
         <div className="w-full py-8">
             <span className="flex justify-between items-center">
                 <h1 className="text-2xl font-semibold">{props.title}</h1>
-                <a className="flex items-center">
+                <a className="flex items-center" href="#">
                     More from {props.title} &nbsp;&nbsp;
                     <BsArrowRight className="text-xl" />
                 </a>
