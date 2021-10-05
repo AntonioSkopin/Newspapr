@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using server.Entities;
+using server.Models;
 using server.Models.Auth;
 
 namespace server.Services.Auth
@@ -10,8 +11,8 @@ namespace server.Services.Auth
     {
         Task<User> GetUser(Guid user_gd);
         Task<User> Authenticate(AuthenticateModel model);
-        Task Register(User user, string password);
-        Task ActivateAccount(string pincode);
+        Task<dynamic> Register(User user, string password);
+        Task<User> ActivateAccount(ActivateModel model);
         Task<bool> CheckIfAccountIsActivated(Guid gd);
     }
     public class AuthService : SqlService, IAuthService
@@ -24,7 +25,7 @@ namespace server.Services.Auth
             _configuration = configuration;
         }
 
-        public async Task ActivateAccount(string pincode)
+        public async Task<User> ActivateAccount(ActivateModel model)
         {
             var getUserQuery =
             @"
@@ -35,12 +36,12 @@ namespace server.Services.Auth
             // Store result of query
             var user = await GetQuery<User>(getUserQuery, new
             {
-                _pin = pincode
+                _pin = model.Pincode
             });
 
             // Validation
             if (user == null)
-                throw new ArgumentException("No user with provided PIN found.");
+                return null;
 
             // Set user profile to active
             var activateProfileQuery =
@@ -51,10 +52,12 @@ namespace server.Services.Auth
                 WHERE Gd = @_gd
             ";
 
-            await PutQuery(activateProfileQuery, new
+            await PutQuery<User>(activateProfileQuery, new
             {
                 _gd = user.Gd
             });
+
+            return user;
         }
 
         public async Task<User> Authenticate(AuthenticateModel model)
@@ -101,12 +104,8 @@ namespace server.Services.Auth
             });
         }
 
-        public async Task Register(User user, string password)
+        public async Task<dynamic> Register(User user, string password)
         {
-            // Validation
-            if (string.IsNullOrWhiteSpace(password))
-                throw new ArgumentException("Please enter a password.");
-
             var getUserQuery =
             @"
                 SELECT * FROM Users
@@ -121,7 +120,12 @@ namespace server.Services.Auth
 
             // Check if email is already taken
             if (foundUser != null)
-                throw new Exception("Email is already taken.");
+            {
+                ExceptionModel exception = new ExceptionModel();
+                exception.ExceptionType =  "Validation error";
+                exception.ExceptionMessage = "Email adress is already taken.";
+                return exception;
+            }
 
             // Get the password hash
             byte[] passwordHash, passwordSalt;
@@ -143,6 +147,8 @@ namespace server.Services.Auth
                 _isActivated = false,
                 _pin = GeneratePin()
             });
+
+            return createdUser;
         }
 
         public async Task<bool> CheckIfAccountIsActivated(Guid gd)

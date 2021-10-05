@@ -1,9 +1,6 @@
 // Router
 import { Switch } from "react-router-dom";
-import { Route } from "react-router";
-
-// Lazy loading
-import { lazy, Suspense } from "react";
+import { Redirect, Route } from "react-router";
 
 // Path
 import { PATH } from "../Constants/paths";
@@ -11,17 +8,15 @@ import { PATH } from "../Constants/paths";
 // Components
 import HomePage from "../Pages/Articles/Homepage";
 
-const ArticleRoutes = () => {
+const ArticleRoutes = (props) => {
     return (
         <Switch>
             <Route
                 exact
                 path={PATH.HOME}
-                component={() => (
-                    <Suspense fallback={<div>wait</div>}>
-                        <HomePage />
-                    </Suspense>
-                )}
+                render={() => {
+                    return props.loggedIn ? <HomePage /> : <Redirect to="/login" />;
+                }}
             />
         </Switch>
     );

@@ -1,27 +1,73 @@
 // API library
 import axios from "axios";
 
-export const Authenticate = async (model) => {
+const authenticate = (model) => {
     try {
-        console.log("MODEL: ", model);
-        return await axios.post("/api/Auth/Authenticate", model);
+        return axios.post("/api/Auth/Authenticate", model)
+            .then(userResponse => {
+                console.log(userResponse);
+                
+                if (userResponse.data) {
+                    // Store user object in localstorage
+                    localStorage.setItem("user", JSON.stringify(userResponse.data));
+                }
+
+                return userResponse;
+            }
+            ).catch(error => {
+                return error.response.data.message;
+            });
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+const register = (model) => {
+    try {
+        return axios.post("/api/Auth/Register", model)
+            .then(res => {
+                return {
+                    message: res.data.message,
+                    type: "success"
+                };
+            }).catch(error => {
+                return {
+                    message: error.response.data.message,
+                    type: "error"
+                };
+            });
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+const activateAccount = (pincode) => {
+    try {
+        return axios.post("/api/Auth/ActivateAccount", pincode)
+            .then(res => {
+                return {
+                    message: res.data.message,
+                    type: "success"
+                };
+            }).catch(error => {
+                return {
+                    message: error.response.data.message,
+                    type: "error"
+                };
+            });
     } catch (error) {
         console.error(error);
     }
 }
 
-export const Register = async (model) => {
-    try {
-        return await axios.post("/api/Auth/Register", model);
-    } catch (error) {
-        console.error(error);
-    }
+const logout = () => {
+    localStorage.removeItem("user");
+    window.location.href = "/login";
 }
 
-export const ActivateAccount = async (pincode) => {
-    try {
-        return await axios.post("/api/Auth/ActivateAccount", pincode);
-    } catch (error) {
-        console.error(error);
-    }
-}
+export default {
+    authenticate,
+    register,
+    activateAccount,
+    logout
+};

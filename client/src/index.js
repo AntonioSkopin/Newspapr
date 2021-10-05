@@ -4,11 +4,15 @@ import './Styles/index.css';
 import "./Styles/Tailwind/tailwind.css";
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import store from "./Store/auth.store";
+import { Provider } from "react-redux";
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+  <Provider store={store}>
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  </Provider>,  
   document.getElementById('root')
 );
 
