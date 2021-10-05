@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using server.Entities;
 using server.Models;
 using server.Models.Auth;
+using server.Services;
 
 namespace server.Services.Auth
 {
@@ -13,7 +14,7 @@ namespace server.Services.Auth
         Task<User> Authenticate(AuthenticateModel model);
         Task<dynamic> Register(User user, string password);
         Task<User> ActivateAccount(ActivateModel model);
-        Task<bool> CheckIfAccountIsActivated(Guid gd);
+        Task<bool> CheckIfAccountIsActivated(string email);
     }
     public class AuthService : SqlService, IAuthService
     {
@@ -62,21 +63,8 @@ namespace server.Services.Auth
 
         public async Task<User> Authenticate(AuthenticateModel model)
         {
-            // Check if user provided all data
-            if (string.IsNullOrEmpty(model.Email) || string.IsNullOrEmpty(model.Password))
-                throw new ArgumentException("Please enter both your email and password!");
-
-            var getUserQuery =
-            @"
-                SELECT * FROM Users
-                Where Email = @_email
-            ";
-
-            // Execute query and store found user
-            var user = await GetQuery<User>(getUserQuery, new
-            {
-                _email = model.Email
-            });
+            UserService userService = new UserService(_configuration);
+            var user = await userService.GetUser(model.Email);
 
             // Check if user exists
             if (user == null)
@@ -106,19 +94,10 @@ namespace server.Services.Auth
 
         public async Task<dynamic> Register(User user, string password)
         {
-            var getUserQuery =
-            @"
-                SELECT * FROM Users
-                WHERE Email = @_email
-            ";
-
-            // Execute query and store results
-            var foundUser = await GetQuery<User>(getUserQuery, new
-            {
-                _email = user.Email
-            });
+            UserService userService = new UserService(_configuration);
 
             // Check if email is already taken
+            var foundUser = await userService.GetUser(user.Email);
             if (foundUser != null)
             {
                 ExceptionModel exception = new ExceptionModel();
@@ -127,48 +106,16 @@ namespace server.Services.Auth
                 return exception;
             }
 
-            // Get the password hash
-            byte[] passwordHash, passwordSalt;
-            PasswordService.CreatePasswordHash(password, out passwordHash, out passwordSalt);
+            // Insert user
+            await userService.InsertUser(user, password); 
 
-            var insertUserQuery =
-            @"
-                INSERT INTO Users
-                VALUES(NEWID(), @_fullname, @_email, @_hash, @_salt, @_isActivated, @_pin)
-            ";
-
-            // Execute query and store new user
-            await PostQuery<User>(insertUserQuery, new
-            {
-                _fullname = user.Fullname,
-                _email = user.Email,
-                _hash = passwordHash,
-                _salt = passwordSalt,
-                _isActivated = false,
-                _pin = GeneratePin()
-            });
-
-            User createdUser = await GetQuery<User>(@"SELECT * FROM Users WHERE Email = @_email", new
-            {
-                _email = user.Email
-            });
-
-            return createdUser;
+            return foundUser;
         }
 
-        public async Task<bool> CheckIfAccountIsActivated(Guid gd)
+        public async Task<bool> CheckIfAccountIsActivated(string email)
         {
-            // Search for user
-            var getUserQuery =
-            @"
-                SELECT * FROM Users
-                WHERE Gd = @_gd
-            ";
-
-            var user = await GetQuery<User>(getUserQuery, new
-            {
-                _gd = gd
-            });
+            UserService userService = new UserService(_configuration);
+            var user = await userService.GetUser(email);
 
             // Validation
             if (user == null)
@@ -178,13 +125,6 @@ namespace server.Services.Auth
                 return false;
 
             return true;
-        }
-
-        // Generates a 4 digit PIN code
-        private static string GeneratePin()
-        {
-            Random random = new Random();
-            return random.Next(0, 9999).ToString("D4");
         }
     }
 }
