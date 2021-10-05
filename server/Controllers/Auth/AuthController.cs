@@ -9,6 +9,7 @@ using server.Entities;
 using server.Helpers;
 using server.Models;
 using server.Models.Auth;
+using server.Services;
 using server.Services.Auth;
 
 namespace server.Controllers.Auth
@@ -56,6 +57,8 @@ namespace server.Controllers.Auth
             var createdUser = await _authService.Register(user, model.Password);
 
             // Send the user a confirmation email
+            var mailService = new MailService(_configuration);
+            mailService.SendRegisterConfirmationMail(createdUser.Email, createdUser.ActivationPin);
 
             return createdUser is ExceptionModel ? 
                     BadRequest(new { Message = "Provided email is already taken please try another one." }) 
