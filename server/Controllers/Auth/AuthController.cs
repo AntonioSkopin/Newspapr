@@ -41,7 +41,7 @@ namespace server.Controllers.Auth
                 return Unauthorized(new { Message = "Please enter valid credentials." });
 
             // Check if account is activated, if so give the user the token, if not give feedback msg
-            return await _authService.CheckIfAccountIsActivated(user.Gd) ? 
+            return await _authService.CheckIfAccountIsActivated(user.Email) ? 
                             Ok(JWTService.CreateToken(user, _appSettings)) 
                             : 
                             Unauthorized(new { Message = "Please activate your account. Instructions can be found in your mail: " + user.Email });
