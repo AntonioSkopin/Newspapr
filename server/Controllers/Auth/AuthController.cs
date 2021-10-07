@@ -58,7 +58,7 @@ namespace server.Controllers.Auth
 
             if (createdUser is ExceptionModel)
             {
-                return BadRequest(new { Message = "Provided email is already taken please try another one." });
+                return BadRequest(new { Message = createdUser.ExceptionMessage });
             }
             
             // Send the user a confirmation email

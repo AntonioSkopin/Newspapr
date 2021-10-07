@@ -95,6 +95,11 @@ namespace server.Services.Auth
         public async Task<dynamic> Register(User user, string password)
         {
             UserService userService = new UserService(_configuration);
+            
+            // Check password length
+            var checkedPasswordLength = CheckPasswordLength(password);
+            if (checkedPasswordLength != null)
+                return checkedPasswordLength;
 
             // Check if user Email is already taken
             var foundUser = await userService.GetUser(user.Email);
@@ -131,6 +136,18 @@ namespace server.Services.Auth
                 ExceptionModel exception = new ExceptionModel();
                 exception.ExceptionType =  "Validation error";
                 exception.ExceptionMessage = "Email adress is already taken.";
+                return exception;
+            }
+            return null;
+        }
+    
+        private static ExceptionModel CheckPasswordLength(string password)
+        {
+            if (password.Length < 6)
+            {
+                ExceptionModel exception = new ExceptionModel();
+                exception.ExceptionType =  "Validation error";
+                exception.ExceptionMessage = "Passwords must be longer than 6 characters. Please try again.";
                 return exception;
             }
             return null;
