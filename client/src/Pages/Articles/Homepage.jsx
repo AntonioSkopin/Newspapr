@@ -4,6 +4,7 @@ import FeaturedArticles from "../../Components/Articles/FeaturedArticles";
 import SpotlightSection from "../../Components/Articles/SpotlightSection";
 import { useSelector } from "react-redux";
 import AuthService from "../../Services/AuthService";
+import Snackbar from "../../Components/Snackbars/Snackbar";
 
 const HomePage = () => {
 
@@ -43,6 +44,7 @@ const HomePage = () => {
             <FeaturedArticles title="Art" />
             <FeaturedArticles title="Environment" />
             <FeaturedArticles title="Tech" />
+            <Snackbar type="succes" text="Successfully logged in!" canBeClosed={true} />
         </section>
     );
 };

@@ -13,10 +13,11 @@ import Input from "../../Components/Inputs/Input";
 
 import { useDispatch } from "react-redux";
 import { authenticate } from "../../Actions/auth.action";
+import Snackbar from "../../Components/Snackbars/Snackbar";
 
 const LoginPage = (props) => {
     const [formData, setFormData] = useState({});
-    const [loginResponse, setLoginResponse] = useState();
+    const [snackbar, setSnackbar] = useState();
     const dispatch = useDispatch();
 
     const handleFormChange = e => {
@@ -30,8 +31,7 @@ const LoginPage = (props) => {
         e.preventDefault();
 
         dispatch(authenticate(formData)).then(loginRes => {
-            console.log(loginRes)
-            setLoginResponse(loginRes);
+            setSnackbar(<Snackbar type="Error" text={loginRes} />);
         });
     };
 
@@ -76,7 +76,7 @@ const LoginPage = (props) => {
                             text="Log In"
                             event={handleSubmit} />
                     </form>
-                    <p className="text-red-500 pt-4">{ loginResponse }</p>
+                    { snackbar }
                     <p className="mt-8 text-center">Need an account? <Link to="/register" className="font-semibold text-blue-500 hover:text-blue-700">Sign Up</Link></p>
                 </div>
             </div>

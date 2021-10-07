@@ -56,14 +56,16 @@ namespace server.Controllers.Auth
             // Create user
             var createdUser = await _authService.Register(user, model.Password);
 
+            if (createdUser is ExceptionModel)
+            {
+                return BadRequest(new { Message = "Provided email is already taken please try another one." });
+            }
+            
             // Send the user a confirmation email
             var mailService = new MailService(_configuration);
             mailService.SendRegisterConfirmationMail(createdUser.Email, createdUser.ActivationPin);
-
-            return createdUser is ExceptionModel ? 
-                    BadRequest(new { Message = "Provided email is already taken please try another one." }) 
-                    :
-                    Ok(new { Message = "Account is created successfully. You can login now." });
+            
+            return Ok(new { Message = "Account is created successfully. You can login now." });
         }
 
         [HttpPost]
