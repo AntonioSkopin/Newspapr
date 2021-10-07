@@ -96,20 +96,16 @@ namespace server.Services.Auth
         {
             UserService userService = new UserService(_configuration);
 
-            // Check if email is already taken
+            // Check if user Email is already taken
             var foundUser = await userService.GetUser(user.Email);
-            if (foundUser != null)
-            {
-                ExceptionModel exception = new ExceptionModel();
-                exception.ExceptionType =  "Validation error";
-                exception.ExceptionMessage = "Email adress is already taken.";
-                return exception;
-            }
+            var isEmailTaken = CheckIfEmailIsTaken(foundUser);
+            if (isEmailTaken != null)
+                return isEmailTaken;
 
-            // Insert user
-            await userService.InsertUser(user, password); 
-
-            return foundUser;
+            // Create user & return created user
+            await userService.InsertUser(user, password);
+            var createdUser = await userService.GetUser(user.Email);
+            return createdUser;
         }
 
         public async Task<bool> CheckIfAccountIsActivated(string email)
@@ -125,6 +121,19 @@ namespace server.Services.Auth
                 return false;
 
             return true;
+        }
+
+        private static ExceptionModel CheckIfEmailIsTaken(User user)
+        {
+            // Check if email is already taken
+            if (user != null)
+            {
+                ExceptionModel exception = new ExceptionModel();
+                exception.ExceptionType =  "Validation error";
+                exception.ExceptionMessage = "Email adress is already taken.";
+                return exception;
+            }
+            return null;
         }
     }
 }

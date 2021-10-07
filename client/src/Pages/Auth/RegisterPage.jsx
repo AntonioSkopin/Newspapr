@@ -11,12 +11,13 @@ import Input from "../../Components/Inputs/Input";
 
 import { register } from "../../Actions/auth.action";
 import { useDispatch } from "react-redux";
+import Snackbar from "../../Components/Snackbars/Snackbar";
 
 const RegisterPage = () => {
     const [formData, setFormData] = useState({});
     const [responseMessage, setResponseMessage] = useState({});
+    const [snackbar, setSnackbar] = useState();
     const dispatch = useDispatch();
-    const responseTextColor = responseMessage.type === "success" ? "text-green-500" : "text-red-500";
 
     const handleFormChange = e => {
         setFormData({
@@ -30,6 +31,8 @@ const RegisterPage = () => {
         
         dispatch(register(formData)).then(res => {
             setResponseMessage(res);
+            console.log("RES: ", res);
+            setSnackbar(<Snackbar type={res.type} text={res.message} />)
         });
     };
 
@@ -79,7 +82,7 @@ const RegisterPage = () => {
                             event={handleSubmit}
                             text="Create your account" />
                     </form>
-                    <p className={`mt-4 ${responseTextColor}`}>{ responseMessage.message }</p>
+                    { snackbar }
                     <p className="mt-8 text-center">Already an account? <Link to="/login" className="font-semibold text-blue-500 hover:text-blue-700">Sign In</Link></p>
                 </div>
             </div>

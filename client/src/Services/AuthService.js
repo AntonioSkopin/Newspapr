@@ -28,7 +28,7 @@ const register = (model) => {
             .then(res => {
                 return {
                     message: res.data.message,
-                    type: "success"
+                    type: "succes"
                 };
             }).catch(error => {
                 return {
