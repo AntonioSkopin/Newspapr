@@ -7,6 +7,8 @@ import { PATH } from "../Constants/paths";
 
 // Components
 import HomePage from "../Pages/Articles/Homepage";
+import ArticlesPage from "../Pages/Articles/ArticlesPage";
+import CreateArticleForm from "../Components/Forms/CreateArticleForm";
 
 const ArticleRoutes = (props) => {
     return (
@@ -16,6 +18,20 @@ const ArticleRoutes = (props) => {
                 path={PATH.HOME}
                 render={() => {
                     return props.loggedIn ? <HomePage /> : <Redirect to="/login" />;
+                }}
+            />
+            <Route
+                exact
+                path={PATH.ARTICLE_PAGE}
+                render={() => {
+                    return props.loggedIn ? <ArticlesPage /> : <Redirect to="/login" />;
+                }}
+            />
+            <Route
+                exact
+                path="/admin/article-form"
+                render={() => {
+                    return props.loggedIn ? <CreateArticleForm /> : <Redirect to="/login" />;
                 }}
             />
         </Switch>

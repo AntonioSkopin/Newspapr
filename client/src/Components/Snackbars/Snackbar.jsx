@@ -8,7 +8,7 @@ const Snackbar = (props) => {
     const [visibility, setVisibility] = useState("visible");
 
     return (
-        <div className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white px-6 py-4 border-0 rounded w-max mb-4 ${visibility} ${snackbarBgColor}`}>
+        <div className={`fixed bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white px-6 py-4 border-0 rounded w-max mb-4 ${visibility} ${snackbarBgColor}`}>
             <span className="text-xl inline-block mr-5 align-middle">
                 { snackbarIcon }
             </span>
