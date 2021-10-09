@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using server.DTO;
 using server.Entities;
 using server.Models.Articles;
 
@@ -18,8 +19,8 @@ namespace server.Services.Articles
 
         Task<List<Article>> GetArticles();
         Task<List<Article>> GetArticlesOfUser(Guid user_gd);
-        Task<List<Article>> GetTop3ArticlesOfTag(string Tag);
-        Task<List<Article>> GetAllArticlesOfTag(string Tag);
+        Task<List<ArticleDTO>> GetTop3ArticlesOfTag(string Tag);
+        Task<List<ArticleDTO>> GetAllArticlesOfTag(string Tag);
 
         /* LIKE METHODS */
         Task LikeArticle(ArticleLikeModel model);
@@ -34,7 +35,7 @@ namespace server.Services.Articles
         Task UnsaveArticle(ArticleSaveModel model);
         /* SAVE METHODS */
 
-        Task<List<Article>> GetSpotlightArticles(string Tag);
+        Task<List<ArticleDTO>> GetSpotlightArticles(string Tag);
     }
     public class ArticleService : SqlService, IArticleService
     {
@@ -53,6 +54,8 @@ namespace server.Services.Articles
                 INSERT INTO Articles
                 VALUES(NEWID(), @_title, @_content, @_postedBy, GETDATE(), @_tag, @_img_id)
             ";
+
+            // Add image to cloudinary
 
             await PostQuery(createArticleQuery, new
             {
@@ -140,33 +143,35 @@ namespace server.Services.Articles
             return newArticle;
         }
 
-        public async Task<List<Article>> GetTop3ArticlesOfTag(string Tag)
+        public async Task<List<ArticleDTO>> GetTop3ArticlesOfTag(string Tag)
         {
             var GetTop3ArticlesOfTagQuery = 
             @"
-                SELECT TOP 3 * 
-                FROM Articles
-                WHERE Articles.Tag = @_tag
+                SELECT TOP 3 article.*, usr.Fullname 
+                FROM Articles article
+                LEFT JOIN Users usr on article.PostedBy = usr.Gd
+                WHERE article.Tag = @_tag
                 ORDER BY DatePosted DESC;
             ";
 
-            return await GetManyQuery<Article>(GetTop3ArticlesOfTagQuery, new
+            return await GetManyQuery<ArticleDTO>(GetTop3ArticlesOfTagQuery, new
             {
                 _tag = Tag
             });
         }
 
-        public async Task<List<Article>> GetAllArticlesOfTag(string Tag)
+        public async Task<List<ArticleDTO>> GetAllArticlesOfTag(string Tag)
         {
             var GetAllArticlesOfTagQuery = 
             @"
                 SELECT  * 
-                FROM Articles
-                WHERE Articles.Tag = @_tag
+                FROM Articles article
+                LEFT JOIN Users usr on article.PostedBy = usr.Gd
+                WHERE article.Tag = @_tag
                 ORDER BY DatePosted DESC;
             ";
 
-            return await GetManyQuery<Article>(GetAllArticlesOfTagQuery, new
+            return await GetManyQuery<ArticleDTO>(GetAllArticlesOfTagQuery, new
             {
                 _tag = Tag
             });
@@ -287,7 +292,7 @@ namespace server.Services.Articles
             });
         }
 
-        public async Task<List<Article>> GetSpotlightArticles(string Tag)
+        public async Task<List<ArticleDTO>> GetSpotlightArticles(string Tag)
         {
             /* 
                 Summary:
@@ -298,27 +303,33 @@ namespace server.Services.Articles
             */
             var GetSpotlightArticlesQuery =
             @"
-                SELECT TOP 4 article.*, likedArticle.numLikes, savedArticle.numSaved 
+                SELECT TOP 4 article.*, likedArticle.numLikes, savedArticle.numSaved, usr.Fullname 
                 FROM Articles article 
+
+                LEFT JOIN Users usr on article.PostedBy = usr.Gd
+
                 LEFT JOIN (
                             SELECT ArticleGd, COUNT(ArticleGd) AS numLikes
                             FROM ArticleLikes
                             GROUP BY ArticleGd
                         ) likedArticle 
                 ON likedArticle.ArticleGd = article.Gd
+
                 LEFT JOIN (
                             SELECT ArticleGd, COUNT(ArticleGd) AS numSaved
                             FROM ArticleSaved
                             GROUP BY ArticleGd
                         ) savedArticle
                 ON savedArticle.ArticleGd = article.Gd
+
                 WHERE Tag = @_tag
                     OR likedArticle.numLikes IS NOT NULL
                     OR savedArticle.numSaved IS NOT NULL
+
                 ORDER BY likedArticle.numLikes DESC, savedArticle.numSaved DESC;
             ";
 
-            return await GetManyQuery<Article>(GetSpotlightArticlesQuery, new
+            return await GetManyQuery<ArticleDTO>(GetSpotlightArticlesQuery, new
             {
                 _tag = Tag
             });

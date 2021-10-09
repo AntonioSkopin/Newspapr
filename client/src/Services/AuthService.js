@@ -1,9 +1,9 @@
 // API library
 import axios from "axios";
 
-const authenticate = (model) => {
+const authenticate = async model => {
     try {
-        return axios.post("/api/Auth/Authenticate", model)
+        return await axios.post("/api/Auth/Authenticate", model)
             .then(userResponse => {
                 console.log(userResponse);
                 
@@ -22,9 +22,9 @@ const authenticate = (model) => {
     }
 }
 
-const register = (model) => {
+const register = async model => {
     try {
-        return axios.post("/api/Auth/Register", model)
+        return await axios.post("/api/Auth/Register", model)
             .then(res => {
                 return {
                     message: res.data.message,
@@ -41,9 +41,9 @@ const register = (model) => {
     }
 }
 
-const activateAccount = (pincode) => {
+const activateAccount = async pincode => {
     try {
-        return axios.post("/api/Auth/ActivateAccount", pincode)
+        return await axios.post("/api/Auth/ActivateAccount", pincode)
             .then(res => {
                 return {
                     message: res.data.message,

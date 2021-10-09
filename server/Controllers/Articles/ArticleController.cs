@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using server.DTO;
 using server.Entities;
 using server.Models.Articles;
 using server.Services.Articles;
@@ -86,16 +87,16 @@ namespace server.Controllers.Articles
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Article>>> GetTop3ArticlesOfTag(string tag)
+        public async Task<ActionResult<List<ArticleDTO>>> GetTop3ArticlesOfTag(string tag)
         {
-            List<Article> articles = await _articleService.GetTop3ArticlesOfTag(tag);
+            List<ArticleDTO> articles = await _articleService.GetTop3ArticlesOfTag(tag);
             return Ok(articles);
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Article>>> GetAllArticlesOfTag(string tag)
+        public async Task<ActionResult<List<ArticleDTO>>> GetAllArticlesOfTag(string tag)
         {
-            List<Article> articles = await _articleService.GetAllArticlesOfTag(tag);
+            List<ArticleDTO> articles = await _articleService.GetAllArticlesOfTag(tag);
             return Ok(articles);
         }
 
@@ -121,9 +122,9 @@ namespace server.Controllers.Articles
         }
         
         [HttpGet]
-        public async Task<ActionResult<List<Article>>> GetSpotlightArticles(string tag)
+        public async Task<ActionResult<List<ArticleDTO>>> GetSpotlightArticles(string tag)
         {
-            List<Article> articles = await _articleService.GetSpotlightArticles(tag);
+            List<ArticleDTO> articles = await _articleService.GetSpotlightArticles(tag);
             return Ok(articles);
         }
 

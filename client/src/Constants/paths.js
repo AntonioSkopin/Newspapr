@@ -1,6 +1,12 @@
 export const PATH = {
-    HOME: "/",
+    // AUTH
     LOGIN: "/login",
     REGISTER: "/register",
-    ACTIVATE_ACCOUNT: "/activate-account"
+    ACTIVATE_ACCOUNT: "/activate-account",
+    // AUTH
+
+    // ARTICLE
+    HOME: "/",
+    ARTICLE_PAGE: "/articles/:tag"
+    // ARTICLE
 };

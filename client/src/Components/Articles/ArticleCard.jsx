@@ -1,15 +1,25 @@
 import IMG2 from "../../Assets/Images/interview.jpg";
-import {AiFillPlayCircle} from "react-icons/ai";
+import { FiHeart, FiBookmark } from "react-icons/fi";
+import CloudinaryImage from "../Image/CloudinaryImage";
 
 const ArticleCard = props => {
     return (
-        <div>
-            <img src={IMG2} alt="" className="w-full" />
-            <h1 className="headline text-lg md:text-2xl py-4">Lebron James emotional after big win and LA Lakers win finals.</h1>
-            <p className="flex items-center text-lg text-gray-700">
-                <AiFillPlayCircle className="mr-4" />
-                Watch now
-            </p>
+        <div className="h-full flex flex-col justify-between">
+            <CloudinaryImage imgID={props.imageID} alt="" className="w-full h-full object-cover" />
+            <div className="md:px-2 pb-4">
+                <h1 className="headline text-lg md:text-2xl py-4">{props.title.slice(0, 70)}...</h1>
+                <p className="text-gray-400">by {props.fullname}.</p>
+                <span className="flex items-center pt-4">
+                    <span className="flex items-center mr-3">
+                        <FiHeart className="text-red-500 mr-1" />
+                        <p className="text-gray-600">{props.numLikes}</p>
+                    </span>
+                    <span className="flex items-center ml-3">
+                        <FiBookmark className="text-blue-500 mr-1" />
+                        <p className="text-gray-600">{props.numSaved}</p>
+                    </span>
+                </span>
+            </div>
         </div>
     );
 };
